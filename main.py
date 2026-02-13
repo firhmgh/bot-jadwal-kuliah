@@ -46,7 +46,7 @@ def handle_generate(message):
         
         final_schedule = generate_schedule_logic(courses, rooms, days, times)
         
-        ws_final = sh.worksheet("JadwalFinal")
+        ws_final = sh.worksheet("jadwalfinal")
         ws_final.clear()
         
         headers = ['Semester', 'Mata Kuliah', 'Dosen Pengampu', 'Kelas', 'SKS', 'Hari', 'Waktu', 'Ruangan']
@@ -127,7 +127,7 @@ def handle_hapus(message):
         
     try:
         sh = get_connection()
-        ws_final = sh.worksheet("JadwalFinal") 
+        ws_final = sh.worksheet("jadwalfinal") 
         all_data = ws_final.get_all_records()
         
         found_index = -1
@@ -174,7 +174,7 @@ def handle_cek(message):
 
     try:
         sh = get_connection()
-        ws_final = sh.worksheet("JadwalFinal")
+        ws_final = sh.worksheet("jadwalfinal")
         all_schedule = ws_final.get_all_records()
         
         filtered = []
