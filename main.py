@@ -80,8 +80,11 @@ def handle_cek(message):
     except Exception as e:
         bot.reply_to(message, f"Error: {e}")
 
-print("Bot sedang berjalan...")
-
-keep_alive()
-
-bot.infinity_polling()
+if __name__ == "__main__":
+    keep_alive()
+    
+    print("Menghapus webhook lama...")
+    bot.remove_webhook() 
+    
+    print("Bot sedang berjalan...")
+    bot.infinity_polling()
