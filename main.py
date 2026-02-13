@@ -226,6 +226,11 @@ def handle_cek(message):
     except Exception as e:
         bot.reply_to(message, f"❌ Error: {str(e)}")
 
-print("Bot sedang berjalan dengan Logic n8n...")
-keep_alive()
-bot.infinity_polling()
+if __name__ == "__main__":
+    keep_alive()
+    
+    print("Menghapus webhook lama...")
+    bot.remove_webhook() 
+    
+    print("Bot sedang berjalan...")
+    bot.infinity_polling()
