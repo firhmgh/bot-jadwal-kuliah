@@ -14,7 +14,7 @@ def get_connection():
         raise Exception("GOOGLE_CREDS atau SHEET_ID belum disetting di Environment Variables!")
 
     creds_dict = json.loads(creds_json)
-    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    scope = ["https://www.googleapis.com/auth/spreadsheets"]
     creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
     client = gspread.authorize(creds)
     

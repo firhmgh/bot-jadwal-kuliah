@@ -24,7 +24,7 @@ def send_welcome(message):
     )
     bot.reply_to(message, msg)
 
-# --- !GENERATE COMMAND (Mirip Node Merge & Code Algorithm) ---
+# --- !GENERATE COMMAND 
 @bot.message_handler(func=lambda m: m.text.lower().strip() == '!generate')
 def handle_generate(message):
     bot.reply_to(message, "⏳ Sedang meng-generate jadwal (Algoritma Anti-Bentrok)...")
@@ -32,23 +32,20 @@ def handle_generate(message):
     try:
         sh = get_connection()
         
-        # 1. Ambil Data Sumber (Sesuai Node Get Matkul, Get Ruang, dll)
         ws_matkul = sh.worksheet("matakuliah")
         ws_ruang = sh.worksheet("ruangan")
         ws_hari = sh.worksheet("hari")
-        ws_waktu = sh.worksheet("jadwal") # Di n8n namanya "Get Waktu" -> sheet 'jadwal'
+        ws_waktu = sh.worksheet("jadwal")
         
         courses = ws_matkul.get_all_records()
         rooms_data = ws_ruang.get_all_records()
-        rooms = [r['Ruangan'] for r in rooms_data if r['Ruangan']] # Ambil kolom Ruangan
+        rooms = [r['Ruangan'] for r in rooms_data if r['Ruangan']] 
         days_data = ws_hari.get_all_records()
-        days = [d['Hari'] for d in days_data if d['Hari']] # Ambil kolom Hari
+        days = [d['Hari'] for d in days_data if d['Hari']]
         times = ws_waktu.get_all_records()
         
-        # 2. Jalankan Algoritma (Sama seperti Code Node JS)
         final_schedule = generate_schedule_logic(courses, rooms, days, times)
         
-        # 3. Simpan ke JadwalFinal (Node Append/Update)
         ws_final = sh.worksheet("JadwalFinal")
         ws_final.clear()
         
@@ -67,14 +64,12 @@ def handle_generate(message):
     except Exception as e:
         bot.reply_to(message, f"❌ Error: {str(e)}")
 
-# --- !TAMBAH COMMAND (Sama Persis Node 'Parse Tambah Command') ---
+# --- !TAMBAH COMMAND 
 @bot.message_handler(func=lambda m: m.text.lower().startswith('!tambah'))
 def handle_tambah(message):
-    # Pecah pesan berdasarkan Enter (Baris Baru)
     text = message.text
     lines = [line.strip() for line in text.split('\n') if line.strip() != '']
     
-    # SKENARIO 1: Minta Template (Cuma ketik !tambah)
     if len(lines) == 1:
         reply = (
             "📋 **TEMPLATE TAMBAH DATA**\n\n"
@@ -86,18 +81,14 @@ def handle_tambah(message):
         bot.reply_to(message, reply, parse_mode="Markdown")
         return
 
-    # SKENARIO 2: Validasi Input (Harus 9 baris: !tambah + 8 data)
     if len(lines) < 9:
         bot.reply_to(message, f"❌ **Data Kurang Lengkap!**\nButuh 9 baris, terdeteksi {len(lines)} baris.")
         return
 
-    # SKENARIO 3: Simpan Data
     try:
         sh = get_connection()
-        ws_matkul = sh.worksheet("matakuliah") # Node n8n 'Append to Matakuliah1'
+        ws_matkul = sh.worksheet("matakuliah") 
         
-        # Mapping data berdasarkan urutan baris n8n
-        # Urutan: Semester, Matkul, Dosen, Kelas, SKS, Hari, Waktu, Ruangan
         new_row = [
             lines[1], # Semester
             lines[2], # Mata Kuliah
@@ -126,7 +117,6 @@ def handle_tambah(message):
     except Exception as e:
         bot.reply_to(message, f"❌ Gagal menyimpan: {str(e)}")
 
-# --- !HAPUS COMMAND (Logic Node 'Filter Out Course' & 'Delete rows') ---
 @bot.message_handler(func=lambda m: m.text.lower().startswith('!hapus'))
 def handle_hapus(message):
     query = message.text.replace("!hapus", "").strip().lower()
@@ -137,13 +127,12 @@ def handle_hapus(message):
         
     try:
         sh = get_connection()
-        ws_final = sh.worksheet("JadwalFinal") # n8n menghapus dari JadwalFinal
+        ws_final = sh.worksheet("JadwalFinal") 
         all_data = ws_final.get_all_records()
         
         found_index = -1
         data_found = {}
         
-        # Mencari data (Sama seperti logika JS findIndex)
         for i, item in enumerate(all_data):
             raw_data = f"{item.get('Mata Kuliah','')} {item.get('Dosen Pengampu','')}".lower()
             if query in raw_data:
@@ -155,7 +144,6 @@ def handle_hapus(message):
             bot.reply_to(message, f"❌ Data \"{query}\" tidak ditemukan di Jadwal Final.")
             return
             
-        # Hapus Baris (Index + 2 karena header row 1 dan index mulai 0)
         row_number = found_index + 2
         ws_final.delete_rows(row_number)
         
@@ -175,7 +163,6 @@ def handle_hapus(message):
 def handle_cek(message):
     query = message.text.replace("!cek", "").strip().lower()
     
-    # Logika konversi waktu pintar (dari kode JS n8n)
     if '1 siang' in query: query = '13'
     elif '2 siang' in query: query = '14'
     elif '3 sore' in query: query = '15'
@@ -192,7 +179,6 @@ def handle_cek(message):
         
         filtered = []
         for item in all_schedule:
-            # Gabungkan semua data penting untuk dicari (Logic JS filter)
             raw_data = (
                 f"Semester: {item.get('Semester')} Matkul: {item.get('Mata Kuliah')} "
                 f"Dosen: {item.get('Dosen Pengampu')} Kelas: {item.get('Kelas')} "
@@ -208,7 +194,6 @@ def handle_cek(message):
         else:
             response_text = f"🔍 **Hasil Pencarian: \"{query}\"**\n(Ditemukan: {len(filtered)} Data)\n\n"
             
-            # Limit display 15 (sesuai n8n)
             for f in filtered[:15]:
                 response_text += (
                     f"🕒 **{f.get('Hari')}, {f.get('Waktu')}** ({f.get('Ruangan')})\n"
