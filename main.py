@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from database import get_connection
 from scheduler import generate_algo
+from keep_alive import keep_alive
 
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -80,4 +81,7 @@ def handle_cek(message):
         bot.reply_to(message, f"Error: {e}")
 
 print("Bot sedang berjalan...")
+
+keep_alive()
+
 bot.infinity_polling()

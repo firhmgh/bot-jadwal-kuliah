@@ -2,4 +2,4 @@ pyTelegramBotAPI
 gspread
 oauth2client
 python-dotenv
-pandas
+flask
